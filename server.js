@@ -1,9 +1,10 @@
 const express = require("express")
+const jwt = require("jsonwebtoken")
 const database = require("./database.js")
 const Sequelize = require("sequelize")
 const Op = Sequelize.Op
 const authentication = require("./auth")
-const auth = authentication.auth()
+const auth = authentication.auth
 const zxcvbn = require("zxcvbn")
 const validator = require("email-validator")
 
@@ -15,8 +16,8 @@ app.use(bodyParser.json({ type: "*/*" }))
 app.post("/signup", async (req, res) => {
   //TODO check: voglio che non sia autenticato
   auth(req, res)
-  if (req.decoded == null) {
-    res.status(70018)
+  if (req.decoded != null) {
+    res.status(718)
     res.send("Signup. You're already authenticated")
     return
   }
@@ -46,12 +47,12 @@ app.post("/signup", async (req, res) => {
 
   // exists?
   if (userFound !== null) {
-    if (userFound.email === email) {
-      res.status(70082)
-      res.send("An existing account is linked to thi email")
+    if (userFound.email === req.body.email) {
+      res.status(782)
+      res.send("An existing account is linked to this email")
       return
     }
-    res.status(70082)
+    res.status(782)
     res.send("this tag isn't available")
     return
   }
@@ -61,16 +62,19 @@ app.post("/signup", async (req, res) => {
   //
   //personal infos
   newUser.name = req.body.name + " " + req.body.surname
-  newUser.dateOfCreation = req.body.dateOfCreation //TODO posso mettere la data di oggi
+  //newUser.dateOfCreation = req.body.dateOfCreation //TODO posso mettere la data di oggi
   //check dell'enum
-  Object.freeze(GenderEnum)
   //req.body.gender should be a number
-  if (!database.GenderEnum.properties[req.body.gender]) {
-    res.status(70067)
+
+  //TODO non funziona una cippa!!!
+  if (!(req.body.gender < 4)) {
+    res.status(767)
     res.send("Gender should be an element of enum")
     return
   }
   newUser.gender = database.GenderEnum.properties[req.body.gender].name
+
+  newUser.gender = "FEMALE"
   newUser.friends = []
   //gestione login alternativi
   //TODO: GOOGLE,FACEBOOK,TWITTER
@@ -80,7 +84,8 @@ app.post("/signup", async (req, res) => {
 
   //creo il nuovo user
   database.User.create(newUser)
-  res.send(jwt.sign(secret))
+  res.send("ciao")
+  //res.send(jwt.sign(secret))
 })
 
 app.get("/login", async (req, res) => {
@@ -128,7 +133,7 @@ app.post("/user/poll", async (req, res) => {
   res.send(newPoll)
 })
 
-app.push("/user/poll") //modifica
+//app.push("/user/poll") //modifica
 
 app.get("/user/favouritePolls", async (req, res) => {
   // decoded contains the payload of the JWT

@@ -1,15 +1,15 @@
 const Sequelize = require("sequelize")
 //enum gender
 const GenderEnum = {
-  MALE: 1,
-  FEMALE: 2,
-  OTHER: 3,
-  NOTSTATED: 4,
+  MALE: 0,
+  FEMALE: 1,
+  OTHER: 2,
+  NOTSTATED: 3,
   properties: {
-    1: { name: "MALE", value: 1 },
-    2: { name: "FEMALE", value: 2 },
-    3: { name: "OTHER", value: 3 },
-    4: { name: "NOT STATED", value: 4 }
+    0: { name: "MALE", value: 1 },
+    1: { name: "FEMALE", value: 2 },
+    2: { name: "OTHER", value: 3 },
+    3: { name: "NOT STATED", value: 4 }
   }
 }
 
