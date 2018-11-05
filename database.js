@@ -84,10 +84,11 @@ const Question = sequelize.define("Question", {
     primaryKey: true
   },
   qType: { type: Sequelize.ENUM(["DATES", "STANDARD"]) },
-  options: { type: Sequelize.STRING },
+  options: { type: Sequelize.ARRAY(Sequelize.STRING) },
   //da disordinare ogni volta
+  //each line represents the values of each option
   scores: { type: Sequelize.ARRAY(Sequelize.ARRAY(Sequelize.DOUBLE)) },
-  results: { type: Sequelize.ARRAY(Sequelize.DOUBLE) }
+  results: { type: Sequelize.ARRAY(Sequelize.STRING) }
 })
 
 const PeopleInPoll = sequelize.define("PeopleInPoll", {
