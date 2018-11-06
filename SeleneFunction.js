@@ -1,48 +1,52 @@
 function seleneFunction(question) {
   const scores = question.scores
-  let results = []
-  results = scores.reduce(
+  let gMedia = []
+  gMedia = scores.reduce(
     (acc, curr) => [...acc, curr.reduce((acc1, curr1) => curr1 * acc1, 1)],
     []
   )
-  results = results.reduce(
+  gMedia = gMedia.reduce(
     (acc, curr) => [...acc, Math.pow(curr, 1.0 / scores[0].length)],
     []
   )
 
-  console.log(results)
-  console.log(question.results)
-
-  //it seems to be anumber that's not lower than or equal to onother while not being greater than it
-  question.results.sort((a, b) => {
-    if (
-      results[question.results.indexOf(a)] <=
-      results[question.results.indexOf(b)]
-    ) {
-      console.log(a, b, 1)
-      return 1
-    }
-
-    if (
-      results[question.results.indexOf(a)] >
-      results[question.results.indexOf(b)]
-    ) {
-      console.log(a, b, -1)
-      return -1
-    }
-    console.log(a, b, 0)
-
-    return 0
-  })
-  //variations... I'll not return the percentage
-  /*question.rooted = question.results.reduce(
-    (acc, curr) => [...acc, curr ** 0.5],
+  //reduce mode on
+  const optMatrix = gMedia.reduce(
+    (acc, curr, index) => [...acc, [question.options[index], curr]],
     []
-  )*/
+  )
+  //console.log(optMatrix)
 
-  return
+  let sortedOptions = optMatrix.sort((a, b) => (a[1] < b[1] ? 1 : -1))
+  //console.log(sortedOptions)
+  sortedOptions = sortedOptions.reduce((acc, curr) => [...acc, curr[0]], [])
+  //console.log(sortedOptions)
+  return sortedOptions
 }
 
 module.exports = {
   seleneFunction: seleneFunction
 }
+
+//schifo
+/*
+  let clone = [...question.options]
+
+  //it seems to be anumber that's not lower than or equal to onother while not being greater than it
+  let sortedOptions = question.options.sort((a, b) => {
+    if (gMedia[clone.indexOf(a)] < gMedia[clone.indexOf(b)]) {
+      return 1
+    }
+
+    if (gMedia[clone.indexOf(a)] > gMedia[clone.indexOf(b)]) {
+      return -1
+    }
+
+    return 0
+  })
+  */
+//variations... I'll not return the percentage
+/*question.rooted = clone.reduce(
+    (acc, curr) => [...acc, curr ** 0.5],
+    []
+  )*/
