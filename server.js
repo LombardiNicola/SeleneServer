@@ -67,14 +67,12 @@ app.post("/signup", async (req, res) => {
   //req.body.gender should be a number
 
   //TODO non funziona una cippa!!!
-  if (!(req.body.gender < 4)) {
+  if (req.body.gender > 4) {
     res.status(767)
     res.send("Gender should be an element of enum")
     return
   }
   newUser.gender = database.GenderEnum.properties[req.body.gender].name
-
-  newUser.gender = "FEMALE"
   newUser.friends = []
   //gestione login alternativi
   //TODO: GOOGLE,FACEBOOK,TWITTER
@@ -92,17 +90,37 @@ app.get("/login", async (req, res) => {
   //TOTO check: non deve essere autenticato e
   //TODO decoded non è body
   //TODO crypto js
-  const password = req.decoded.password
+  let realUser = {}
+  const password = req.body.password
   //gestire email e tag
-  const tag = req.decoded.tag
-  //codifica
+  if (validator.validate(req.body.login)) {
+    //email
+    const email = req.body.login
+    realUser = await database.User.find({
+      where: { email: email, password: password }
+    })
+  } else {
+    //tag
+    if (req.body.login.startsWith("@") || req.body.login.indexOf("@") === -1) {
+      const tag = req.body.login
+      realUser = await database.User.find({
+        where: { tag: tag, password: password }
+      })
+    } else {
+      //none
+      res.status(790)
+      res.send("email or tag is not valid")
+      return
+    }
+  }
 
-  const realUser = await database.User.find({ where: { tag: tag } })
   //codifica
-  if (password === realUser.password) {
+  if (realUser.password === password) {
     //è ok, devo fare cose
     //do un token
-    res.send(jwt.sign(secret))
+    //res.send(jwt.sign(secret))
+    res.send("login")
+    return
   } else {
     res.status(810)
     res.send("Password is not correct")

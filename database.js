@@ -41,7 +41,6 @@ const User = sequelize.define("user", {
   accountType: { type: Sequelize.ENUM(["BASIC", "PRO", "SITE"]) },
 
   //personal infos
-  dateOfCreation: { type: Sequelize.DATEONLY },
   name: { type: Sequelize.STRING },
   gender: { type: Sequelize.ENUM(["FEMALE", "MALE", "OTHER", "NOT STATED"]) },
   friends: { type: Sequelize.ARRAY(Sequelize.UUID) },
