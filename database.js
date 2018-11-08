@@ -38,7 +38,9 @@ const User = sequelize.define("user", {
   emailIsVerified: { type: Sequelize.BOOLEAN },
   password: { type: Sequelize.STRING },
   tag: { type: Sequelize.STRING },
-  accountType: { type: Sequelize.ENUM(["BASIC", "PRO", "SITE"]) },
+  accountType: {
+    type: Sequelize.ENUM(["NEW MOON", "FULL MOON", "SUPERMOON", "BLOODMOON"])
+  },
 
   //personal infos
   name: { type: Sequelize.STRING },
@@ -62,30 +64,33 @@ const Poll = sequelize.define("poll", {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true
   },
-  pollName: { type: Sequelize.STRING },
-  pollDescription: { type: Sequelize.STRING },
+  name: { type: Sequelize.STRING },
+  description: { type: Sequelize.STRING },
   questions: { type: Sequelize.ARRAY(Sequelize.UUID) },
 
   idOwner: { type: Sequelize.UUID },
   isFavourite: { type: Sequelize.BOOLEAN },
-  isLive: { type: Sequelize.BOOLEAN }
+  isLive: { type: Sequelize.BOOLEAN },
+  isArchived: { type: Sequelize.BOOLEAN }
+
   //if true, send notification and start the expires methods
 
   //devo gestire i metodi di chiusura del poll
 })
 
 const Question = sequelize.define("Question", {
-  qName: { type: Sequelize.STRING },
-  qDescription: { type: Sequelize.STRING },
-  idQuestion: {
+  id: {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true
   },
-  qType: { type: Sequelize.ENUM(["DATES", "STANDARD"]) },
+  name: { type: Sequelize.STRING },
+  description: { type: Sequelize.STRING },
+  type: { type: Sequelize.ENUM(["DATES", "STANDARD"]) },
   options: { type: Sequelize.ARRAY(Sequelize.STRING) },
   //da disordinare ogni volta
   //each line represents the values of each option
+  //past results? past data
   scores: { type: Sequelize.ARRAY(Sequelize.ARRAY(Sequelize.DOUBLE)) },
   results: { type: Sequelize.ARRAY(Sequelize.STRING) }
 })

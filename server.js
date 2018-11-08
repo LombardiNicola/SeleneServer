@@ -1,5 +1,6 @@
 const express = require("express")
 const jwt = require("jsonwebtoken")
+const secret = "78437v0842hr79bh7vfd02j379hv6s8t234fhqd"
 const database = require("./database.js")
 const Sequelize = require("sequelize")
 const Op = Sequelize.Op
@@ -82,13 +83,21 @@ app.post("/signup", async (req, res) => {
 
   //creo il nuovo user
   database.User.create(newUser)
-  res.send("ciao")
-  //res.send(jwt.sign(secret))
+  const payload = {
+    userId: newUser.id
+  }
+  const token = jwt.sign(payload, secret, { expiresIn: "7d" })
+  res.send(token)
 })
 
 app.get("/login", async (req, res) => {
   //TOTO check: non deve essere autenticato e
-  //TODO decoded non è body
+  auth(req, res)
+  if (req.decoded != null) {
+    res.status(718)
+    res.send("Signup. You're already authenticated")
+    return
+  }
   //TODO crypto js
   let realUser = {}
   const password = req.body.password
@@ -118,8 +127,11 @@ app.get("/login", async (req, res) => {
   if (realUser.password === password) {
     //è ok, devo fare cose
     //do un token
-    //res.send(jwt.sign(secret))
-    res.send("login")
+    const payload = {
+      userId: realUser.id
+    }
+    const token = jwt.sign(payload, secret, { expiresIn: "7d" })
+    res.send(token)
     return
   } else {
     res.status(810)
@@ -128,13 +140,34 @@ app.get("/login", async (req, res) => {
   }
 })
 
-app.use("/user/*", async (req, res, next) => {
-  if (!req.trouble === null) {
-    res.status(res.trouble[0])
-    res.send(res.trouble[1])
+app.use("/user*", async (req, res, next) => {
+  auth(req, res)
+  if (!req.error === null) {
+    res.status(res.error[0])
+    res.send(res.error[1])
     return
   }
   next()
+})
+
+app.put("/user", async (req, res) => {
+  //la modifica dei dei dati di login la farò in seguito
+  const userId = req.body.userId
+  const user = database.User.find({ where: { id: userId } })
+  //controllo che non faccia modifiche troppo spesso
+  if (true) {
+    //oggi-user.updatedAt<1 giorno)
+    res.status(854)
+    res.send("You've already modified your account in the last 24 hours")
+    return
+  }
+  //ora posso aggiornare i dati... ancora un volta... come lo faccio?
+  res.send("//TODO")
+})
+
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId
+  res.send("//TODO")
 })
 
 app.post("/user/poll", async (req, res) => {
@@ -144,19 +177,42 @@ app.post("/user/poll", async (req, res) => {
   newPoll.idOwner = userId
   newPoll.name = req.body.name
   newPoll.description = req.body.description
-  //questions
+  newPoll.questions = []
   newPoll.isFavourite = false
   newPoll.isLive = false
+  newPoll.isArchived = false
   database.Poll.create(newPoll)
   res.send(newPoll)
 })
 
-//app.push("/user/poll") //modifica
+app.put("/user/poll", async (req, res) => {
+  //cerco la poll
+  const pollId = req.body.pollId
+  const poll = await database.Poll.find({ where: { id: pollId } })
+  //verifico che si abbiano i permessi per fare una modifica
+  if (!poll.idOwner === req.body.userId) {
+    res.status("867")
+    res.send("Modifica Poll, you don't have permissions to modify this poll")
+    return
+  }
+  //TODO faccio la modifica.. ha senso modificare tutto?
+  //ha senso fare un ciclo e checkare singolo a singolo se è da modificare o meno?
+  newPoll.name = req.body.name
+  newPoll.description = req.body.description
+  //TODO problem: id question come lo gestisco qua?
+  // invoco la push di question?
+  //di fatto, una question non può sussistere senza una poll... ha senso trattarla come tabella
+  //o meglio come json?
+  newPoll.questions = req.body.questions
+  newPoll.isFavourite = req.body.isFavourite
+  newPoll.isLive = req.body.isLive
+  res.send("Done")
+})
 
 app.get("/user/favouritePolls", async (req, res) => {
   // decoded contains the payload of the JWT
   //TODO auth
-  const userId = req.decoded.user.id
+  const userId = req.body.userid
   const favPolls = await database.Poll.findAll({
     where: { idOwner: userId, isFavourite: true }
   })

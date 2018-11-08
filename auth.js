@@ -33,7 +33,7 @@ function auth(req, res) {
         // decoded contains the payload of the JWT
 
         //TODO ha senso?
-        const userId = req.decoded.user.id
+        const userId = req.decoded.userId
 
         //se voglio trovarne più di uno allora uso findAll
         const userFound = await database.User.find({ where: { id: userId } })
@@ -42,6 +42,7 @@ function auth(req, res) {
           res.error = [404, "User not found"]
           return
         }
+        req.body.userId = userId
       }
     })
   }
