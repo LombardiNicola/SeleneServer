@@ -154,14 +154,14 @@ app.put("/user", async (req, res) => {
   //la modifica dei dei dati di login la farò in seguito
   const userId = req.body.userId
   const user = database.User.find({ where: { id: userId } })
-  //controllo che non faccia modifiche troppo spesso
-  if (true) {
-    //oggi-user.updatedAt<1 giorno)
-    res.status(854)
-    res.send("You've already modified your account in the last 24 hours")
-    return
-  }
   //ora posso aggiornare i dati... ancora un volta... come lo faccio?
+  Object.entries(user).forEach(function(key) {
+    if (poll[key] != req.body[key] && req.body[key] != null) {
+      //check che sia qualcosa di esistente
+      poll[key] = req.body[key]
+      console.log(key + "cambiata")
+    }
+  })
   res.send("//TODO")
 })
 
@@ -171,16 +171,16 @@ app.delete("/user", async (req, res) => {
 })
 
 app.post("/user/poll", async (req, res) => {
-  const userId = req.decoded.user.id
   const newPoll = {}
   //id è autogestito
-  newPoll.idOwner = userId
+  newPoll.idOwner = req.body.userId
   newPoll.name = req.body.name
   newPoll.description = req.body.description
   newPoll.questions = []
   newPoll.isFavourite = false
   newPoll.isLive = false
   newPoll.isArchived = false
+  //questions
   database.Poll.create(newPoll)
   res.send(newPoll)
 })
@@ -195,17 +195,13 @@ app.put("/user/poll", async (req, res) => {
     res.send("Modifica Poll, you don't have permissions to modify this poll")
     return
   }
-  //TODO faccio la modifica.. ha senso modificare tutto?
-  //ha senso fare un ciclo e checkare singolo a singolo se è da modificare o meno?
-  newPoll.name = req.body.name
-  newPoll.description = req.body.description
-  //TODO problem: id question come lo gestisco qua?
-  // invoco la push di question?
-  //di fatto, una question non può sussistere senza una poll... ha senso trattarla come tabella
-  //o meglio come json?
-  newPoll.questions = req.body.questions
-  newPoll.isFavourite = req.body.isFavourite
-  newPoll.isLive = req.body.isLive
+  Object.entries(poll).forEach(function(key) {
+    if (poll[key] != req.body[key] && req.body[key != null]) {
+      //TODO:dovrei checkare che siano tipi accettabili
+      poll[key] = req.body[key]
+      console.log(key + "cambiata")
+    }
+  })
   res.send("Done")
 })
 

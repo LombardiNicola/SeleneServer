@@ -87,12 +87,10 @@ const Question = sequelize.define("Question", {
   name: { type: Sequelize.STRING },
   description: { type: Sequelize.STRING },
   type: { type: Sequelize.ENUM(["DATES", "STANDARD"]) },
-  options: { type: Sequelize.ARRAY(Sequelize.STRING) },
+  options: { type: Sequelize.ARRAY(Sequelize.STRING) }
   //da disordinare ogni volta
   //each line represents the values of each option
   //past results? past data
-  scores: { type: Sequelize.ARRAY(Sequelize.ARRAY(Sequelize.DOUBLE)) },
-  results: { type: Sequelize.ARRAY(Sequelize.STRING) }
 })
 
 const PeopleInPoll = sequelize.define("PeopleInPoll", {
@@ -104,6 +102,18 @@ const PeopleInPoll = sequelize.define("PeopleInPoll", {
   },
   hasVoted: { type: Sequelize.BOOLEAN }
 })
+
+const PollResults = sequelize.define("PollResults", {
+  idResults: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true
+  },
+  idPoll: { type: Sequelize.UUID },
+  scores: { type: Sequelize.ARRAY(Sequelize.ARRAY(Sequelize.DOUBLE)) },
+  results: { type: Sequelize.ARRAY(Sequelize.STRING) }
+})
+
 module.exports = {
   User: User,
   Poll: Poll,
