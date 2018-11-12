@@ -16,11 +16,14 @@ app.use(bodyParser.json({ type: "*/*" }))
 
 app.post("/signup", async (req, res) => {
   //TODO check: voglio che non sia autenticato
-  auth(req, res)
-  if (req.decoded != null) {
+  try {
+    const authenticated = await auth(req, res)
     res.status(718)
     res.send("Signup. You're already authenticated")
+    console.log("try")
     return
+  } catch (e) {
+    console.log("catch")
   }
   const newUser = {}
   //manca la verifica dei dati
@@ -62,7 +65,8 @@ app.post("/signup", async (req, res) => {
   //account type: default=basic
   //
   //personal infos
-  newUser.name = req.body.name + " " + req.body.surname
+  newUser.name = req.body.name
+  newUser.surname = req.body.surname
   //newUser.dateOfCreation = req.body.dateOfCreation //TODO posso mettere la data di oggi
   //check dell'enum
   //req.body.gender should be a number
@@ -91,13 +95,16 @@ app.post("/signup", async (req, res) => {
 })
 
 app.get("/login", async (req, res) => {
-  //TOTO check: non deve essere autenticato e
-  auth(req, res)
-  if (req.decoded != null) {
+  try {
+    const authenticated = await auth(req, res)
     res.status(718)
     res.send("Signup. You're already authenticated")
+    console.log("try")
     return
+  } catch (e) {
+    console.log("catch")
   }
+
   //TODO crypto js
   let realUser = {}
   const password = req.body.password
@@ -140,29 +147,28 @@ app.get("/login", async (req, res) => {
   }
 })
 
-app.use("/user*", async (req, res, next) => {
-  auth(req, res)
-  if (!req.error === null) {
-    res.status(res.error[0])
-    res.send(res.error[1])
+app.use("/user/*", async (req, res, next) => {
+  let authenticated
+  try {
+    authenticated = await auth(req, res)
+    console.log("try")
+  } catch (e) {
+    console.log("catch")
+    res.status(e[0])
+    res.send(e[1])
     return
   }
+  req.body.userId = authenticated
   next()
 })
 
-app.put("/user", async (req, res) => {
+app.put("/user/changes", async (req, res) => {
   //la modifica dei dei dati di login la farò in seguito
   const userId = req.body.userId
-  const user = database.User.find({ where: { id: userId } })
-  //ora posso aggiornare i dati... ancora un volta... come lo faccio?
-  Object.entries(user).forEach(function(key) {
-    if (poll[key] != req.body[key] && req.body[key] != null) {
-      //check che sia qualcosa di esistente
-      poll[key] = req.body[key]
-      console.log(key + "cambiata")
-    }
-  })
-  res.send("//TODO")
+  console.log(userId)
+  database.User.update(req.body, { where: { id: userId } })
+  const user = await database.User.find({ where: { id: userId } })
+  res.send(user.name)
 })
 
 app.delete("/user", async (req, res) => {

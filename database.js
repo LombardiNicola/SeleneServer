@@ -44,11 +44,12 @@ const User = sequelize.define("user", {
 
   //personal infos
   name: { type: Sequelize.STRING },
+  surname: { type: Sequelize.STRING },
   gender: { type: Sequelize.ENUM(["FEMALE", "MALE", "OTHER", "NOT STATED"]) },
   friends: { type: Sequelize.ARRAY(Sequelize.UUID) },
 
   //TODO: GOOGLE,FACEBOOK,TWITTER
-  //users blocatti
+  //users blocati
   //pagamenti
   //icone
 
