@@ -69,7 +69,7 @@ const Poll = sequelize.define("poll", {
   description: { type: Sequelize.STRING },
   questions: { type: Sequelize.ARRAY(Sequelize.UUID) },
 
-  idOwner: { type: Sequelize.UUID },
+  idUser: { type: Sequelize.UUID },
   isFavourite: { type: Sequelize.BOOLEAN },
   isLive: { type: Sequelize.BOOLEAN },
   isArchived: { type: Sequelize.BOOLEAN }

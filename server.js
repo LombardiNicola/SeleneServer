@@ -177,16 +177,14 @@ app.delete("/user", async (req, res) => {
 })
 
 app.post("/user/poll", async (req, res) => {
-  const newPoll = {}
+  const newPoll = req.body
   //id è autogestito
-  newPoll.idOwner = req.body.userId
-  newPoll.name = req.body.name
-  newPoll.description = req.body.description
+  //TODO:questions
   newPoll.questions = []
   newPoll.isFavourite = false
   newPoll.isLive = false
   newPoll.isArchived = false
-  //questions
+
   database.Poll.create(newPoll)
   res.send(newPoll)
 })
