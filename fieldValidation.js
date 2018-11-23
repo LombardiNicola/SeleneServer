@@ -1,4 +1,7 @@
 //in questo file, ci saranno tutti i metodi che permettono di verificare che, al momento di agire sul database, i dati da inserire siano accettabili
+
+const validator = require("email-validator")
+
 function isString(x) {
   try {
     return x === x.toString() && x != "" ? true : false
@@ -7,6 +10,9 @@ function isString(x) {
   }
 }
 
+function isTag(x) {
+  isString(x) && x[0] == "@"
+}
 function isInt(x) {
   return Number.isFinite(x)
 }
@@ -19,33 +25,31 @@ function isBoolean(x) {
   }
 }
 
-function user(x){
-    //id già checkato
-    //TODO: SEE YA LATER
-      //credentials
-      email: { type: Sequelize.STRING },
-      //email deve essere verificata
-      emailIsVerified: { type: Sequelize.BOOLEAN },
-      password: { type: Sequelize.STRING },
-      tag: { type: Sequelize.STRING },
-      accountType: {
-        type: Sequelize.ENUM(["NEW MOON", "FULL MOON", "SUPERMOON", "BLOODMOON"])
-      },
-    
-      //personal infos
-      name: { type: Sequelize.STRING },
-      surname: { type: Sequelize.STRING },
-      gender: { type: Sequelize.ENUM(["FEMALE", "MALE", "OTHER", "NOT STATED"]) },
-      friends: { type: Sequelize.ARRAY(Sequelize.UUID) },
-    
-      //TODO: GOOGLE,FACEBOOK,TWITTER
-      //users blocati
-      //pagamenti
-      //icone
-    
-      //preferences
-      language: { type: Sequelize.ENUM(["en-GB", "en-US", "it-IT"]) },
-      theme: { type: Sequelize.ENUM(["DARK", "LIGHT"]) }
+User = {
+  //id già checkato
+  //TODO: SEE YA LATER
+  //credentials
+  email: validator.validate,
+  //email deve essere verificata
+  emailIsVerified: isBoolean,
+  password: isString,
+  tag: isTag,
+  //accountType
+
+  //personal infos
+  name: isString,
+  surname: isString,
+  //gender: { type: Sequelize.ENUM(["FEMALE", "MALE", "OTHER", "NOT STATED"]) },
+  friends: isArray
+
+  //TODO: GOOGLE,FACEBOOK,TWITTER
+  //users blocati
+  //pagamenti
+  //icone
+
+  //preferences
+  //language: { type: Sequelize.ENUM(["en-GB", "en-US", "it-IT"]) },
+  //theme: { type: Sequelize.ENUM(["DARK", "LIGHT"]) }
 }
 
 module.exports = {

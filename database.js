@@ -24,7 +24,7 @@ const sequelize = new Sequelize(
     logging: false
   }
 )
-//TODO FARE IL SETUP
+
 const User = sequelize.define("user", {
   id: {
     type: Sequelize.UUID,
